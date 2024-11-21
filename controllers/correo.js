@@ -67,7 +67,7 @@ const sendVerificationEmail = async (filteredResults, basededatos) => {
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: '20030274@itcelaya.edu.mx',
+            to: 'oficialdecumplimiento@siemprendemos.com.mx',
             subject: `Reporte diario de operaciones relevantes - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
