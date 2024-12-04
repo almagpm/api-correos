@@ -6,7 +6,7 @@ const query = util.promisify(siemprendemos.query).bind(siemprendemos);
 const query2 = util.promisify(comercializadora.query).bind(comercializadora);
 
 // Importa la función para enviar correos
-const { sendVerificationEmail } = require('./correo');
+const { sendVerificationEmail, sendVerificationEmailSiemprendemos, sendVerificationEmailGerenteIbt } = require('./correo');
 
 const enviarCorreosPld = async (req, res) => {
     try {
@@ -24,6 +24,8 @@ const enviarCorreosPld = async (req, res) => {
         const emailData = filteredResults.length > 0 ? filteredResults : [{ mensaje: "No hay alertas" }];
 
         await sendVerificationEmail(emailData, "SIAGRO");
+        await sendVerificationEmailSiemprendemos(emailData, "SIAGRO");
+	await sendVerificationEmailGerenteIbt(emailData, "SIAGRO");
 
         const responseMessage = filteredResults.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -53,6 +55,8 @@ const enviarCorreosPldSapi = async (req, res) => {
         const emailData = filteredResults.length > 0 ? filteredResults : [{ mensaje: "No hay alertas" }];
 
         await sendVerificationEmail(emailData, "SAPI");
+        await sendVerificationEmailSiemprendemos(emailData, "SAPI");
+        await sendVerificationEmailGerenteIbt(emailData, "SAPI");
 
         const responseMessage = filteredResults.length > 0
             ? "Notificaciones enviadas correctamente por correo"
