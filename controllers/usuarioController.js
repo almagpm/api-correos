@@ -48,9 +48,9 @@ const enviarCorreosPld = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendVerificationEmail(emailData, "SIAGRO");
-        await sendVerificationEmailSiemprendemos(emailData, "SIAGRO");
-	    await sendVerificationEmailGerenteIbt(emailData, "SIAGRO");
+        await sendVerificationEmail(emailData,groupedNotificaciones, "SIAGRO");
+        await sendVerificationEmailSiemprendemos(emailData, groupedNotificaciones, "SIAGRO");
+	    await sendVerificationEmailGerenteIbt(emailData, groupedNotificaciones, "SIAGRO");
         await pruebas(emailData, groupedNotificaciones, "SIAGRO");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
@@ -109,9 +109,9 @@ const enviarCorreosPldSapi = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendVerificationEmail(emailData, "SAPI");
-        await sendVerificationEmailSiemprendemos(emailData, "SAPI");
-        await sendVerificationEmailGerenteIbt(emailData, "SAPI");
+        await sendVerificationEmail(emailData, groupedNotificaciones, "SAPI");
+        await sendVerificationEmailSiemprendemos(emailData, groupedNotificaciones, "SAPI");
+        await sendVerificationEmailGerenteIbt(emailData,groupedNotificaciones, "SAPI");
         await pruebas(emailData, groupedNotificaciones, "SAPI");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0

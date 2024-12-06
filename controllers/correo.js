@@ -31,7 +31,7 @@ transporter.sendMail(mailOptions, (err, info) => {
  * Envía un correo electrónico con una tabla generada dinámicamente a partir de los datos proporcionados.
  * @param {Array} filteredResults - Array de objetos con datos filtrados.
  */
-const sendVerificationEmail = async (filteredResults, basededatos) => {
+const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -155,7 +155,7 @@ const sendVerificationEmail = async (filteredResults, basededatos) => {
     }
 };
 
-const sendVerificationEmailSiemprendemos = async (filteredResults, basededatos) => {
+const sendVerificationEmailSiemprendemos = async (filteredResults, otrasalertas, basededatos) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -278,7 +278,7 @@ const sendVerificationEmailSiemprendemos = async (filteredResults, basededatos) 
         throw new Error("Error al enviar el correo de verificación.");
     }
 };
-const sendVerificationEmailGerenteIbt = async (filteredResults, basededatos) => {
+const sendVerificationEmailGerenteIbt = async (filteredResults, otrasalertas, basededatos) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
