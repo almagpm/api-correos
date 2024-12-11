@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
+const PDFDocument = require('pdfkit');
 
 /* const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -413,6 +414,15 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
             },
         });
         const hoy = new Date().toISOString().split('T')[0];
+        const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
+        const pdfPath = path.join(__dirname, pdfFilename);
+
+        //Creación del PDF
+        const doc = new PDFDocument();
+        doc.pipe(fs.createWriteStream(pdfPath));
+        doc.fontSize(25).text('Reporte del día', { align: 'center' });
+        doc.end();
+
 
         let tableRowsPLD; // Declaración inicial
 
@@ -516,9 +526,19 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
                 </div>
             </div>
             `,
+            attachments: [
+                {
+                    filename: pdfFilename,
+                    path: pdfPath,
+                    contentType: 'application/pdf'
+                }
+            ]
         };
 
         await transporter.sendMail(mailOptions);
+        // Eliminar el archivo PDF después de enviar el correo
+        fs.unlinkSync(pdfPath);
+        
     } catch (error) {
         console.error("Error al enviar el correo de verificación:", error);
         throw new Error("Error al enviar el correo de verificación.");
