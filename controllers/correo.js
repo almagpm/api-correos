@@ -37,8 +37,10 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
             },
         };
 
-        // Crear un generador PDF
         const printer = new pdfMake(fonts);
+
+        // Validación de alertas
+        const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
 
         // Contenido del documento
         const docDefinition = {
@@ -46,75 +48,88 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
                 { text: basededatos, style: 'header' },
                 { text: `Reporte del día: ${hoy}`, style: 'subheader' },
                 { text: '\nOperaciones relevantes / PLD Alertas', style: 'tableHeader' },
-                {
-                    table: {
-                        headerRows: 1,
-                        widths: ['auto', 'auto', '*', '*'],
-                        body: [
-                            ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
-                            ...filteredResults.map(item => [
-                                item.numero_cliente || "N/A",
-                                item.fechaalarma
-                                    ? new Date(item.fechaalarma).toLocaleDateString()
-                                    : "Fecha no disponible",
-                                item.tipo || "N/A",
-                                item.motivo || "N/A",
-                            ]),
-                        ],
+                noHayAlertasPLD
+                    ? {
+                        text: 'No hay alertas relevantes para el día de hoy.',
+                        style: 'noAlerts',
+                        margin: [0, 10, 0, 10],
+                    }
+                    : {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', '*', '*'],
+                            body: [
+                                ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                ...filteredResults.map(item => [
+                                    item.numero_cliente || "N/A",
+                                    item.fechaalarma
+                                        ? new Date(item.fechaalarma).toLocaleDateString()
+                                        : "Fecha no disponible",
+                                    item.tipo || "N/A",
+                                    item.motivo || "N/A",
+                                ]),
+                            ],
+                        },
+                        layout: 'lightHorizontalLines',
                     },
-                    layout: 'lightHorizontalLines',
-                },
                 { text: '\nOtras Alertas', style: 'tableHeader' },
-                
-        ...otrasalertas.flatMap(group => [
-            {
-                text: group.tipo,
-                style: 'groupTitle',
-                margin: [0, 10, 0, 5],
-            },
-            group.notificaciones.length > 0
-                ? {
-                    table: {
-                        headerRows: 1,
-                        widths: ['auto', 'auto', '*', '*'],
-                        body: [
-                            ['Cliente', 'Fecha', 'Tipo', 'Motivo'],
-                            ...group.notificaciones.map(item => [
-                                item.numero_cliente || "N/A",
-                                item.fechaalarma
-                                    ? new Date(item.fechaalarma).toLocaleDateString()
-                                    : "Fecha no disponible",
-                                item.tipo || "N/A",
-                                item.motivo || "N/A",
-                            ]),
-                        ],
-                    },
-                    layout: 'lightHorizontalLines',
-                }
-                : {
-                    text: 'No hay alertas para el día de hoy.',
-                    style: 'noAlerts',
-                    margin: [0, 0, 0, 10],
-                },
-        ]),
-        // Aquí añadimos el QR
-        { text: '\nSello de validación de documento:', style: 'sello', alignment: 'right',},
-        {
-            image: qrImage,
-            width: 100, // Ancho del QR
-            height: 100, // Alto del QR
-            alignment: 'right', // Alineación a la derecha
-            margin: [0, 10, 20, 20], // Márgenes
-        },
+                ...otrasalertas.flatMap(group => {
+                    const noHayNotificaciones =
+                        group.notificaciones[0]?.mensaje === "No hay alertas";
 
+                    return [
+                        {
+                            text: group.tipo,
+                            style: 'groupTitle',
+                            margin: [0, 10, 0, 5],
+                        },
+                        noHayNotificaciones
+                            ? {
+                                text: 'No hay alertas para el día de hoy.',
+                                style: 'noAlerts',
+                                margin: [0, 5, 0, 10],
+                            }
+                            : {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['auto', 'auto', '*', '*'],
+                                    body: [
+                                        ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                        ...group.notificaciones.map(item => [
+                                            item.numero_cliente || "N/A",
+                                            item.fechaalarma
+                                                ? new Date(item.fechaalarma).toLocaleDateString()
+                                                : "Fecha no disponible",
+                                            item.tipo || "N/A",
+                                            item.motivo || "N/A",
+                                        ]),
+                                    ],
+                                },
+                                layout: 'lightHorizontalLines',
+                            },
+                    ];
+                }),
+                {
+                    text: '                   ',
+                    style: 'noAlerts',
+                    margin: [0, 10, 0, 10],
+                },
+                // Sello de validación y QR
+                { text: '\nSello de validación de documento:           ', style: 'sello', alignment: 'right' },
+                {
+                    image: qrImage,
+                    width: 100,
+                    height: 100,
+                    alignment: 'right',
+                    margin: [0, 10, 20, 20],
+                },
                 { text: '\nCelaya, Gto.', style: 'footer' },
                 { text: 'Correo de contacto: sistemas@siemprendemos.com.mx', style: 'footer' },
-                
             ],
             styles: {
                 header: { fontSize: 18, bold: true, alignment: 'center' },
                 subheader: { fontSize: 14, margin: [0, 10, 0, 10], alignment: 'center' },
-                tableHeader: { bold: true, fontSize: 12, color: 'black', margin: [0, 10, 0, 5],  },
+                tableHeader: { bold: true, fontSize: 12, color: 'black', margin: [0, 10, 0, 5] },
                 groupTitle: { fontSize: 12, bold: true },
                 sello: { fontSize: 10, alignment: 'center', color: 'gray' },
                 noAlerts: { italics: true, alignment: 'center', margin: [0, 5, 0, 5] },
@@ -293,6 +308,133 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
             },
         });
         const hoy = new Date().toISOString().split('T')[0];
+        const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
+        const pdfPath = path.join(__dirname, pdfFilename);
+
+
+         // Generar el QR con la información
+         const qrData = `Emitido el ${hoy} desde la base de datos: ${basededatos}`;
+         const qrImage = await QRCode.toDataURL(qrData); // Genera una imagen en formato DataURL
+ 
+
+        // Configuración de fuentes
+        // Configurar las fuentes
+        const fonts = {
+            Roboto: {
+                normal: path.join(__dirname, 'fonts', 'Roboto-Regular.ttf'),
+                bold: path.join(__dirname, 'fonts', 'Roboto-Bold.ttf'),
+                italics: path.join(__dirname, 'fonts', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(__dirname, 'fonts', 'Roboto-BoldItalic.ttf'),
+            },
+        };
+
+        const printer = new pdfMake(fonts);
+
+        // Validación de alertas
+        const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
+
+        // Contenido del documento
+        const docDefinition = {
+            content: [
+                { text: basededatos, style: 'header' },
+                { text: `Reporte del día: ${hoy}`, style: 'subheader' },
+                { text: '\nOperaciones relevantes / PLD Alertas', style: 'tableHeader' },
+                noHayAlertasPLD
+                    ? {
+                        text: 'No hay alertas relevantes para el día de hoy.',
+                        style: 'noAlerts',
+                        margin: [0, 10, 0, 10],
+                    }
+                    : {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', '*', '*'],
+                            body: [
+                                ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                ...filteredResults.map(item => [
+                                    item.numero_cliente || "N/A",
+                                    item.fechaalarma
+                                        ? new Date(item.fechaalarma).toLocaleDateString()
+                                        : "Fecha no disponible",
+                                    item.tipo || "N/A",
+                                    item.motivo || "N/A",
+                                ]),
+                            ],
+                        },
+                        layout: 'lightHorizontalLines',
+                    },
+                { text: '\nOtras Alertas', style: 'tableHeader' },
+                ...otrasalertas.flatMap(group => {
+                    const noHayNotificaciones =
+                        group.notificaciones[0]?.mensaje === "No hay alertas";
+
+                    return [
+                        {
+                            text: group.tipo,
+                            style: 'groupTitle',
+                            margin: [0, 10, 0, 5],
+                        },
+                        noHayNotificaciones
+                            ? {
+                                text: 'No hay alertas para el día de hoy.',
+                                style: 'noAlerts',
+                                margin: [0, 5, 0, 10],
+                            }
+                            : {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['auto', 'auto', '*', '*'],
+                                    body: [
+                                        ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                        ...group.notificaciones.map(item => [
+                                            item.numero_cliente || "N/A",
+                                            item.fechaalarma
+                                                ? new Date(item.fechaalarma).toLocaleDateString()
+                                                : "Fecha no disponible",
+                                            item.tipo || "N/A",
+                                            item.motivo || "N/A",
+                                        ]),
+                                    ],
+                                },
+                                layout: 'lightHorizontalLines',
+                            },
+                    ];
+                }),
+                {
+                    text: '                   ',
+                    style: 'noAlerts',
+                    margin: [0, 10, 0, 10],
+                },
+                // Sello de validación y QR
+                { text: '\nSello de validación de documento:           ', style: 'sello', alignment: 'right' },
+                {
+                    image: qrImage,
+                    width: 100,
+                    height: 100,
+                    alignment: 'right',
+                    margin: [0, 10, 20, 20],
+                },
+                { text: '\nCelaya, Gto.', style: 'footer' },
+                { text: 'Correo de contacto: sistemas@siemprendemos.com.mx', style: 'footer' },
+            ],
+            styles: {
+                header: { fontSize: 18, bold: true, alignment: 'center' },
+                subheader: { fontSize: 14, margin: [0, 10, 0, 10], alignment: 'center' },
+                tableHeader: { bold: true, fontSize: 12, color: 'black', margin: [0, 10, 0, 5] },
+                groupTitle: { fontSize: 12, bold: true },
+                sello: { fontSize: 10, alignment: 'center', color: 'gray' },
+                noAlerts: { italics: true, alignment: 'center', margin: [0, 5, 0, 5] },
+                footer: { fontSize: 10, alignment: 'center', color: 'gray', margin: [0, 20, 0, 0] },
+            },
+        };
+
+        // Crear el PDF
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        pdfDoc.pipe(fs.createWriteStream(pdfPath));
+        pdfDoc.end();
+
+
+
 
         let tableRowsPLD; // Declaración inicial
 
@@ -396,9 +538,19 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
                 </div>
             </div>
             `,
+            attachments: [
+                {
+                    filename: pdfFilename,
+                    path: pdfPath,
+                    contentType: 'application/pdf'
+                }
+            ]
         };
 
         await transporter.sendMail(mailOptions);
+        // Eliminar el archivo PDF después de enviar el correo
+        fs.unlinkSync(pdfPath);
+        
     } catch (error) {
         console.error("Error al enviar el correo de verificación:", error);
         throw new Error("Error al enviar el correo de verificación.");
@@ -417,6 +569,133 @@ const sendVerificationEmailSiemprendemos = async (filteredResults, otrasalertas,
             },
         });
         const hoy = new Date().toISOString().split('T')[0];
+        const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
+        const pdfPath = path.join(__dirname, pdfFilename);
+
+
+         // Generar el QR con la información
+         const qrData = `Emitido el ${hoy} desde la base de datos: ${basededatos}`;
+         const qrImage = await QRCode.toDataURL(qrData); // Genera una imagen en formato DataURL
+ 
+
+        // Configuración de fuentes
+        // Configurar las fuentes
+        const fonts = {
+            Roboto: {
+                normal: path.join(__dirname, 'fonts', 'Roboto-Regular.ttf'),
+                bold: path.join(__dirname, 'fonts', 'Roboto-Bold.ttf'),
+                italics: path.join(__dirname, 'fonts', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(__dirname, 'fonts', 'Roboto-BoldItalic.ttf'),
+            },
+        };
+
+        const printer = new pdfMake(fonts);
+
+        // Validación de alertas
+        const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
+
+        // Contenido del documento
+        const docDefinition = {
+            content: [
+                { text: basededatos, style: 'header' },
+                { text: `Reporte del día: ${hoy}`, style: 'subheader' },
+                { text: '\nOperaciones relevantes / PLD Alertas', style: 'tableHeader' },
+                noHayAlertasPLD
+                    ? {
+                        text: 'No hay alertas relevantes para el día de hoy.',
+                        style: 'noAlerts',
+                        margin: [0, 10, 0, 10],
+                    }
+                    : {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', '*', '*'],
+                            body: [
+                                ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                ...filteredResults.map(item => [
+                                    item.numero_cliente || "N/A",
+                                    item.fechaalarma
+                                        ? new Date(item.fechaalarma).toLocaleDateString()
+                                        : "Fecha no disponible",
+                                    item.tipo || "N/A",
+                                    item.motivo || "N/A",
+                                ]),
+                            ],
+                        },
+                        layout: 'lightHorizontalLines',
+                    },
+                { text: '\nOtras Alertas', style: 'tableHeader' },
+                ...otrasalertas.flatMap(group => {
+                    const noHayNotificaciones =
+                        group.notificaciones[0]?.mensaje === "No hay alertas";
+
+                    return [
+                        {
+                            text: group.tipo,
+                            style: 'groupTitle',
+                            margin: [0, 10, 0, 5],
+                        },
+                        noHayNotificaciones
+                            ? {
+                                text: 'No hay alertas para el día de hoy.',
+                                style: 'noAlerts',
+                                margin: [0, 5, 0, 10],
+                            }
+                            : {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['auto', 'auto', '*', '*'],
+                                    body: [
+                                        ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                        ...group.notificaciones.map(item => [
+                                            item.numero_cliente || "N/A",
+                                            item.fechaalarma
+                                                ? new Date(item.fechaalarma).toLocaleDateString()
+                                                : "Fecha no disponible",
+                                            item.tipo || "N/A",
+                                            item.motivo || "N/A",
+                                        ]),
+                                    ],
+                                },
+                                layout: 'lightHorizontalLines',
+                            },
+                    ];
+                }),
+                {
+                    text: '                   ',
+                    style: 'noAlerts',
+                    margin: [0, 10, 0, 10],
+                },
+                // Sello de validación y QR
+                { text: '\nSello de validación de documento:           ', style: 'sello', alignment: 'right' },
+                {
+                    image: qrImage,
+                    width: 100,
+                    height: 100,
+                    alignment: 'right',
+                    margin: [0, 10, 20, 20],
+                },
+                { text: '\nCelaya, Gto.', style: 'footer' },
+                { text: 'Correo de contacto: sistemas@siemprendemos.com.mx', style: 'footer' },
+            ],
+            styles: {
+                header: { fontSize: 18, bold: true, alignment: 'center' },
+                subheader: { fontSize: 14, margin: [0, 10, 0, 10], alignment: 'center' },
+                tableHeader: { bold: true, fontSize: 12, color: 'black', margin: [0, 10, 0, 5] },
+                groupTitle: { fontSize: 12, bold: true },
+                sello: { fontSize: 10, alignment: 'center', color: 'gray' },
+                noAlerts: { italics: true, alignment: 'center', margin: [0, 5, 0, 5] },
+                footer: { fontSize: 10, alignment: 'center', color: 'gray', margin: [0, 20, 0, 0] },
+            },
+        };
+
+        // Crear el PDF
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        pdfDoc.pipe(fs.createWriteStream(pdfPath));
+        pdfDoc.end();
+
+
+
 
         let tableRowsPLD; // Declaración inicial
 
@@ -520,9 +799,19 @@ const sendVerificationEmailSiemprendemos = async (filteredResults, otrasalertas,
                 </div>
             </div>
             `,
+            attachments: [
+                {
+                    filename: pdfFilename,
+                    path: pdfPath,
+                    contentType: 'application/pdf'
+                }
+            ]
         };
 
         await transporter.sendMail(mailOptions);
+        // Eliminar el archivo PDF después de enviar el correo
+        fs.unlinkSync(pdfPath);
+        
     } catch (error) {
         console.error("Error al enviar el correo de verificación:", error);
         throw new Error("Error al enviar el correo de verificación.");
@@ -540,6 +829,133 @@ const sendVerificationEmailGerenteIbt = async (filteredResults, otrasalertas, ba
             },
         });
         const hoy = new Date().toISOString().split('T')[0];
+        const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
+        const pdfPath = path.join(__dirname, pdfFilename);
+
+
+         // Generar el QR con la información
+         const qrData = `Emitido el ${hoy} desde la base de datos: ${basededatos}`;
+         const qrImage = await QRCode.toDataURL(qrData); // Genera una imagen en formato DataURL
+ 
+
+        // Configuración de fuentes
+        // Configurar las fuentes
+        const fonts = {
+            Roboto: {
+                normal: path.join(__dirname, 'fonts', 'Roboto-Regular.ttf'),
+                bold: path.join(__dirname, 'fonts', 'Roboto-Bold.ttf'),
+                italics: path.join(__dirname, 'fonts', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(__dirname, 'fonts', 'Roboto-BoldItalic.ttf'),
+            },
+        };
+
+        const printer = new pdfMake(fonts);
+
+        // Validación de alertas
+        const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
+
+        // Contenido del documento
+        const docDefinition = {
+            content: [
+                { text: basededatos, style: 'header' },
+                { text: `Reporte del día: ${hoy}`, style: 'subheader' },
+                { text: '\nOperaciones relevantes / PLD Alertas', style: 'tableHeader' },
+                noHayAlertasPLD
+                    ? {
+                        text: 'No hay alertas relevantes para el día de hoy.',
+                        style: 'noAlerts',
+                        margin: [0, 10, 0, 10],
+                    }
+                    : {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', '*', '*'],
+                            body: [
+                                ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                ...filteredResults.map(item => [
+                                    item.numero_cliente || "N/A",
+                                    item.fechaalarma
+                                        ? new Date(item.fechaalarma).toLocaleDateString()
+                                        : "Fecha no disponible",
+                                    item.tipo || "N/A",
+                                    item.motivo || "N/A",
+                                ]),
+                            ],
+                        },
+                        layout: 'lightHorizontalLines',
+                    },
+                { text: '\nOtras Alertas', style: 'tableHeader' },
+                ...otrasalertas.flatMap(group => {
+                    const noHayNotificaciones =
+                        group.notificaciones[0]?.mensaje === "No hay alertas";
+
+                    return [
+                        {
+                            text: group.tipo,
+                            style: 'groupTitle',
+                            margin: [0, 10, 0, 5],
+                        },
+                        noHayNotificaciones
+                            ? {
+                                text: 'No hay alertas para el día de hoy.',
+                                style: 'noAlerts',
+                                margin: [0, 5, 0, 10],
+                            }
+                            : {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['auto', 'auto', '*', '*'],
+                                    body: [
+                                        ['Cliente', 'Fecha', 'Tipo', 'Motivo'], // Headers
+                                        ...group.notificaciones.map(item => [
+                                            item.numero_cliente || "N/A",
+                                            item.fechaalarma
+                                                ? new Date(item.fechaalarma).toLocaleDateString()
+                                                : "Fecha no disponible",
+                                            item.tipo || "N/A",
+                                            item.motivo || "N/A",
+                                        ]),
+                                    ],
+                                },
+                                layout: 'lightHorizontalLines',
+                            },
+                    ];
+                }),
+                {
+                    text: '                   ',
+                    style: 'noAlerts',
+                    margin: [0, 10, 0, 10],
+                },
+                // Sello de validación y QR
+                { text: '\nSello de validación de documento:           ', style: 'sello', alignment: 'right' },
+                {
+                    image: qrImage,
+                    width: 100,
+                    height: 100,
+                    alignment: 'right',
+                    margin: [0, 10, 20, 20],
+                },
+                { text: '\nCelaya, Gto.', style: 'footer' },
+                { text: 'Correo de contacto: sistemas@siemprendemos.com.mx', style: 'footer' },
+            ],
+            styles: {
+                header: { fontSize: 18, bold: true, alignment: 'center' },
+                subheader: { fontSize: 14, margin: [0, 10, 0, 10], alignment: 'center' },
+                tableHeader: { bold: true, fontSize: 12, color: 'black', margin: [0, 10, 0, 5] },
+                groupTitle: { fontSize: 12, bold: true },
+                sello: { fontSize: 10, alignment: 'center', color: 'gray' },
+                noAlerts: { italics: true, alignment: 'center', margin: [0, 5, 0, 5] },
+                footer: { fontSize: 10, alignment: 'center', color: 'gray', margin: [0, 20, 0, 0] },
+            },
+        };
+
+        // Crear el PDF
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        pdfDoc.pipe(fs.createWriteStream(pdfPath));
+        pdfDoc.end();
+
+
+
 
         let tableRowsPLD; // Declaración inicial
 
@@ -643,9 +1059,19 @@ const sendVerificationEmailGerenteIbt = async (filteredResults, otrasalertas, ba
                 </div>
             </div>
             `,
+            attachments: [
+                {
+                    filename: pdfFilename,
+                    path: pdfPath,
+                    contentType: 'application/pdf'
+                }
+            ]
         };
 
         await transporter.sendMail(mailOptions);
+        // Eliminar el archivo PDF después de enviar el correo
+        fs.unlinkSync(pdfPath);
+        
     } catch (error) {
         console.error("Error al enviar el correo de verificación:", error);
         throw new Error("Error al enviar el correo de verificación.");
