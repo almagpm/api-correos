@@ -503,7 +503,7 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['alma.pm.archivos@gmail.com', 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx', 'direccion@ibtmx.com'], // Array de correos
+            to: ['oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'], // Array de correos
             subject: `Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
