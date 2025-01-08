@@ -116,7 +116,7 @@ const enviarCorreosPldSapi = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        //await sendVerificationEmail(emailData, groupedNotificaciones, "SAPI");
+        await sendVerificationEmail(emailData, groupedNotificaciones, "SAPI");
         await pruebas(emailData, groupedNotificaciones, "SAPI");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
@@ -175,7 +175,7 @@ const pruebas_comercializadora = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        //await sendEmailPruebas(emailData, groupedNotificaciones, "SAPI (prueba)");
+        await sendEmailPruebas(emailData, groupedNotificaciones, "SAPI (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -233,7 +233,7 @@ const pruebas_siemprendemos = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        //await sendEmailPruebas(emailData, groupedNotificaciones, "SIAGRO (prueba)");
+        await sendEmailPruebas(emailData, groupedNotificaciones, "SIAGRO (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -290,7 +290,7 @@ const pruebas_queretaro = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        //await sendEmailPruebas(emailData, groupedNotificaciones, "Queretaro (prueba)");
+        await sendEmailPruebas(emailData, groupedNotificaciones, "Queretaro (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -326,7 +326,7 @@ const verificar = async (req, res) => {
                 </head>
                 <body>
                     <div class="alert alert-success" role="alert">
-                        <strong>¡Token válido!</strong><br>
+                        <strong>¡Sello válido!</strong><br>
                         Fecha: ${fecha} <br>
                         Base de datos: ${basededatos}
                     </div>
@@ -348,7 +348,7 @@ const verificar = async (req, res) => {
                 </head>
                 <body>
                     <div class="alert alert-warning" role="alert">
-                        <strong>Error al verificar el token:</strong><br>
+                        <strong>Error al verificar el sello:</strong><br>
                         ${err.message}
                     </div>
                 </body>

@@ -222,7 +222,7 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: 'alma.pm.archivos@gmail.com',
+            to:  ['alma.pm.archivos@gmail.com','direccion@ibtmx.com'],
             subject: `Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
