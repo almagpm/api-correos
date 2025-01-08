@@ -56,7 +56,7 @@ const enviarCorreosPld = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendVerificationEmail(emailData,groupedNotificaciones, "SIAGRO");
+        //await sendVerificationEmail(emailData,groupedNotificaciones, "SIAGRO");
         await pruebas(emailData, groupedNotificaciones, "SIAGRO");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
@@ -115,7 +115,7 @@ const enviarCorreosPldSapi = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendVerificationEmail(emailData, groupedNotificaciones, "SAPI");
+        //await sendVerificationEmail(emailData, groupedNotificaciones, "SAPI");
         await pruebas(emailData, groupedNotificaciones, "SAPI");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
@@ -174,7 +174,7 @@ const pruebas_comercializadora = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendEmailPruebas(emailData, groupedNotificaciones, "SAPI (prueba)");
+        //await sendEmailPruebas(emailData, groupedNotificaciones, "SAPI (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -232,7 +232,7 @@ const pruebas_siemprendemos = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendEmailPruebas(emailData, groupedNotificaciones, "SIAGRO (prueba)");
+        //await sendEmailPruebas(emailData, groupedNotificaciones, "SIAGRO (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -289,7 +289,7 @@ const pruebas_queretaro = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendEmailPruebas(emailData, groupedNotificaciones, "Queretaro (prueba)");
+        //await sendEmailPruebas(emailData, groupedNotificaciones, "Queretaro (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
