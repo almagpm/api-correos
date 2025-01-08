@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const pdfMake = require('pdfmake');
 const QRCode = require('qrcode');
+const jwt = require('jsonwebtoken');
 
 
 const pruebas = async (filteredResults, otrasalertas, basededatos) => {
@@ -20,10 +21,19 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
         const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
         const pdfPath = path.join(__dirname, pdfFilename);
 
+        const token = jwt.sign(
+            {
+                fecha: hoy,
+                basededatos,
+            },
+            process.env.SECRET // Llave secreta
+        );
+
+        const qrURL = `http://3.131.34.100:3006/correos/validar-qr?token=${token}`;
+
 
          // Generar el QR con la información
-         const qrData = `Emitido el ${hoy} desde la base de datos: ${basededatos}`;
-         const qrImage = await QRCode.toDataURL(qrData); // Genera una imagen en formato DataURL
+         const qrImage = await QRCode.toDataURL(qrURL); 
  
 
         // Configuración de fuentes
@@ -503,7 +513,7 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'], // Array de correos
+            to: ['alma.pm.archivos@gmail.com', 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'],
             subject: `Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
@@ -572,10 +582,19 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
         const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
         const pdfPath = path.join(__dirname, pdfFilename);
 
+        const token = jwt.sign(
+            {
+                fecha: hoy,
+                basededatos,
+            },
+            process.env.SECRET // Llave secreta
+        );
+
+        const qrURL = `http://3.131.34.100:3006/correos/validar-qr?token=${token}`;
+
 
          // Generar el QR con la información
-         const qrData = `Emitido el ${hoy} desde la base de datos: ${basededatos}`;
-         const qrImage = await QRCode.toDataURL(qrData); // Genera una imagen en formato DataURL
+         const qrImage = await QRCode.toDataURL(qrURL); 
  
 
         // Configuración de fuentes
@@ -764,7 +783,7 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['alma.pm.archivos@gmail.com', 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx', 'direccion@ibtmx.com'],
+            to: ['alma.pm.archivos@gmail.com', 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'],
             subject: `Entorno pruebas - Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
