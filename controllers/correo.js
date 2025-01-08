@@ -29,7 +29,7 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
             process.env.SECRET // Llave secreta
         );
 
-        const qrURL = `https://api.trustguardmx.com/black-list/v1/validar-qr?token=${token}`;
+        const qrURL = `http://3.131.34.100:3006/correos/validar-qr?token=${token}`;
 
 
          // Generar el QR con la información
@@ -322,9 +322,20 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
         const pdfPath = path.join(__dirname, pdfFilename);
 
 
+         
+        const token = jwt.sign(
+            {
+                fecha: hoy,
+                basededatos,
+            },
+            process.env.SECRET // Llave secreta
+        );
+
+        const qrURL = `http://3.131.34.100:3006/correos/validar-qr?token=${token}`;
+
+
          // Generar el QR con la información
-         const qrData = `Emitido el ${hoy} desde la base de datos: ${basededatos}`;
-         const qrImage = await QRCode.toDataURL(qrData); // Genera una imagen en formato DataURL
+         const qrImage = await QRCode.toDataURL(qrURL); 
  
 
         // Configuración de fuentes
@@ -582,6 +593,7 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
         const pdfFilename = `Reporte_${hoy}-${basededatos}.pdf`;
         const pdfPath = path.join(__dirname, pdfFilename);
 
+        
         const token = jwt.sign(
             {
                 fecha: hoy,
