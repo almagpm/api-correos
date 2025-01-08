@@ -57,7 +57,7 @@ const enviarCorreosPld = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        //await sendVerificationEmail(emailData,groupedNotificaciones, "SIAGRO");
+        await sendVerificationEmail(emailData,groupedNotificaciones, "SIAGRO");
         await pruebas(emailData, groupedNotificaciones, "SIAGRO");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
