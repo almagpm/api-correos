@@ -304,6 +304,29 @@ const pruebas_queretaro = async (req, res) => {
     }
 };
 
+//PARA VALIDAR EL QR CUANDO ES ESCANEADO
+const verificar = async (req, res) => {
+    try {
+        const { token } = req.params;
+
+
+         const decoded = jwt.verify(token, process.env.SECRET);
+
+         console.log('Datos del token:', decoded);
+
+        res.send({
+            status: 200,
+            message: "Token válido",
+            data: decoded, 
+        });
+
+    } catch (err) {
+        console.error("Error al verificar usuario:", err);
+        const response = createResponse(400, null, err.message, 1);
+        res.send(response);
+    }
+};
+
 
 
 module.exports = {
@@ -311,5 +334,6 @@ module.exports = {
     enviarCorreosPldSapi,
     pruebas_comercializadora,
     pruebas_siemprendemos,
-    pruebas_queretaro
+    pruebas_queretaro,
+    verificar
 };
