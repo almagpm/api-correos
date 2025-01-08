@@ -8,7 +8,7 @@ router.get('/pld-correos-sapi', enviarCorreosPldSapi);
 router.get('/pld-correos-pc', pruebas_comercializadora);
 router.get('/pld-correos-ps', pruebas_siemprendemos);
 router.get('/pld-correos-pq', pruebas_queretaro);
-router.get('/validar-qr/:token', verificar);
+router.get('/validar-qr', verificar);
 
 
 

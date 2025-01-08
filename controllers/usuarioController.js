@@ -5,6 +5,7 @@ const siemprendemos_prueba = require('../bd_pruebas/database_ps');
 const queretaro_prueba = require('../bd_pruebas/database_pq');
 const createResponse = require('./response');
 const util = require('util');
+const jwt = require('jsonwebtoken');
 const query = util.promisify(siemprendemos.query).bind(siemprendemos);
 const query2 = util.promisify(comercializadora.query).bind(comercializadora);
 
@@ -307,25 +308,58 @@ const pruebas_queretaro = async (req, res) => {
 //PARA VALIDAR EL QR CUANDO ES ESCANEADO
 const verificar = async (req, res) => {
     try {
-        const { token } = req.params;
+        const { token } = req.query;
 
+        // Verificar y decodificar el token usando la clave secreta
+        const decoded = jwt.verify(token, process.env.SECRET);
 
-         const decoded = jwt.verify(token, process.env.SECRET);
+        console.log('Datos del token:', decoded);
 
-         console.log('Datos del token:', decoded);
+        // Extraer la fecha y la base de datos
+        const { fecha, basededatos } = decoded;
 
-        res.send({
-            status: 200,
-            message: "Token válido",
-            data: decoded, 
-        });
+        // Generar el mensaje de éxito con Bootstrap
+        const htmlResponse = `
+            <html>
+                <head>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+                </head>
+                <body>
+                    <div class="alert alert-success" role="alert">
+                        <strong>¡Token válido!</strong><br>
+                        Fecha: ${fecha} <br>
+                        Base de datos: ${basededatos}
+                    </div>
+                </body>
+            </html>
+        `;
+
+        // Enviar la respuesta con el mensaje de éxito
+        res.send(htmlResponse);
 
     } catch (err) {
         console.error("Error al verificar usuario:", err);
-        const response = createResponse(400, null, err.message, 1);
-        res.send(response);
+
+        // Generar el mensaje de error con Bootstrap
+        const htmlResponse = `
+            <html>
+                <head>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+                </head>
+                <body>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Error al verificar el token:</strong><br>
+                        ${err.message}
+                    </div>
+                </body>
+            </html>
+        `;
+
+        // Enviar la respuesta con el mensaje de error
+        res.send(htmlResponse);
     }
 };
+
 
 
 

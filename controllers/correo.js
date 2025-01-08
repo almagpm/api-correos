@@ -29,7 +29,7 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
             process.env.SECRET // Llave secreta
         );
 
-        const qrURL = `http://3.131.34.100:3006/correos/validar-qr?token=${token}`;
+        const qrURL = `https://api.trustguardmx.com/black-list/v1/validar-qr?token=${token}`;
 
 
          // Generar el QR con la información
