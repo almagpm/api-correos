@@ -3,8 +3,8 @@ const express = require('express');
 const app = express();
 
 
-const usuarioRoutes = require('./routes/usuarioRoutes');
-app.use('/correos', usuarioRoutes);
+const correosRoutes = require('./routes/correosRoutes');
+app.use('/correos', correosRoutes);
 
 
 const port = process.env.PORT || 3006;
