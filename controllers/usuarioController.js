@@ -83,9 +83,6 @@ const enviarCorreosPldSapi = async (req, res) => {
        
 
         const emailData = data.length > 0 ? data : [{ mensaje: "No hay alertas" }];
-         // SE TERMINA EL PLD
-
-
          
         //INICIA EL DE CORREOS DIVERSOS
         const consultaNotificaciones = `

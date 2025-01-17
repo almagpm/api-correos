@@ -6,20 +6,31 @@ const query = util.promisify(comercializadora.query).bind(comercializadora);
 //Importaciones para el excel
 
 
-const {  pruebasCartera} = require('./correoCartera');
+const {  pruebasCartera, sinPreCierre} = require('./correoCartera');
 
 
 const carteraCredito = async (req, res) => {
     try {
+        // Verificar si existe al menos un registro en la tabla precierre
+        const validacionCierre = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
+        const validacionResult = await query(validacionCierre);
 
-        const validacionCierre = ` SELECT * FROM precierre where fecha_cierre= CURRENT_DATE`;
+        console.log("Resultados");
+        console.log(validacionResult.rowCount);
 
-        const consulta = ` SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE,0,'02')`;
+        if (!validacionResult || validacionResult.rowCount === 0) {
+            await sinPreCierre();
+            const response = createResponse(400, null, "No hay un precierre para generar la cartera", 1);
+            return res.send(response);
+        }
 
+
+
+        const consulta = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '02')`;
         const result = await query(consulta);
 
+        
         const listaAcomodada = mapeo(result);
-
         const cabecera = cabeceraExcel();
 
         await pruebasCartera(listaAcomodada, cabecera);
