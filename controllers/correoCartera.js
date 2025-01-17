@@ -71,7 +71,7 @@ const pruebasCartera = async (listaAcomodadas, cabecera) => {
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['alma.pm.archivos@gmail.com', 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx'],
+            to: ['alma.pm.archivos@gmail.com', 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx', 'direccion@ibtmx.com'],
             subject: `Cartera SIAGRO ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
@@ -139,7 +139,7 @@ const sinPreCierre = async () => {
         // Opciones del correo
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['alma.pm.archivos@gmail.com', 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx'],
+            to: ['alma.pm.archivos@gmail.com', 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx', 'direccion@ibtmx.com'],
             subject: `Cartera SAPI ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
