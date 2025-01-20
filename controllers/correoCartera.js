@@ -130,10 +130,10 @@ const pruebasCartera = async (
             from: 'sistemas@siemprendemos.com.mx',
             to: [
                 'alma.pm.archivos@gmail.com',
-                // 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
-                // 'direccion@ibtmx.com',
-                // 'auxprocesos@siemprendemos.com.mx',
-                // 'ejecutiva.agronegocios@siemprendemos.com.mx',
+                'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
+                'direccion@ibtmx.com',
+                'auxprocesos@siemprendemos.com.mx',
+                'ejecutiva.agronegocios@siemprendemos.com.mx',
              ],
             subject: `Cartera SIAGRO, SAPI y QUERETARO ${hoy}`,
             html: `
@@ -198,11 +198,13 @@ const sinPreCierre = async () => {
         // Opciones del correo
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: //[
-                'alma.pm.archivos@gmail.com', 
-                //'contabilidadsiemprendemos_cdr@siemprendemos.com.mx', 
-                //'direccion@ibtmx.com'
-                // ],
+            to: [
+                'alma.pm.archivos@gmail.com',
+                'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
+                'direccion@ibtmx.com',
+                'auxprocesos@siemprendemos.com.mx',
+                'ejecutiva.agronegocios@siemprendemos.com.mx',
+             ],
             subject: `Cartera consolidada ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
@@ -304,8 +306,14 @@ const pruebasCarteraConsolidada = async (listaAcomodadas, cabecera) => {
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: 'alma.pm.archivos@gmail.com',
-            subject: `Cartera SIAGRO ${hoy}`,
+            to: [
+                'alma.pm.archivos@gmail.com',
+                'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
+                'direccion@ibtmx.com',
+                'auxprocesos@siemprendemos.com.mx',
+                'ejecutiva.agronegocios@siemprendemos.com.mx',
+             ],
+            subject: `Cartera Consolidada ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
                 <div style="max-width: 800px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #ddd;">
@@ -313,7 +321,7 @@ const pruebasCarteraConsolidada = async (listaAcomodadas, cabecera) => {
                         <h1 style="color: #ffffff; font-size: 24px;">SAPI</h1>
                     </div>
                     <div style="padding: 40px; text-align: center;">
-                        <h2 style="color: #333333; font-size: 20px;">Cartera del día:</h2>
+                        <h2 style="color: #333333; font-size: 20px;">Cartera consolidada del día:</h2>
                         <h2 style="color: #333333; font-size: 20px;">${hoy}</h2>
                         <br>
                         <h3 style="color: #333333; text-align: center;">Se encuentra adjunto el archivo de cartera en este correo</h3>
