@@ -298,7 +298,7 @@ const cabeceraExcel = () =>{
 
     const carteraCreditoConsolidada = async (req, res) => {
         try {
-            const validacionCierre = `SELECT * FROM checar_precierres_consolidados('14/01/2025')`;
+            const validacionCierre = `SELECT * FROM checar_precierres_consolidados(CURRENT_DATE)`;
             const validacionResult = await query(validacionCierre);
     
             console.log("Resultados");
@@ -316,7 +316,7 @@ const cabeceraExcel = () =>{
 
             if(hayprecierre){
 
-                const consulta = `SELECT * FROM spsgenerarchivocarteraconsolidado_2('14/01/2025')`;
+                const consulta = `SELECT * FROM spsgenerarchivocarteraconsolidado_2(CURRENT_DATE)`;
                 const result = await query(consulta);
         
                 
