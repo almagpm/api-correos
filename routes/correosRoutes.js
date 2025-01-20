@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const {enviarCorreosPld, enviarCorreosPldSapi, pruebas_comercializadora, pruebas_siemprendemos, pruebas_queretaro, verificar} = require('../controllers/usuarioController');
-const {carteraCredito} = require('../controllers/carteraController');
+const {carteraCredito, carteraCreditoConsolidada} = require('../controllers/carteraController');
 
 router.get('/pld-correos-siagro', enviarCorreosPld);
 router.get('/pld-correos-sapi', enviarCorreosPldSapi);
@@ -13,6 +13,7 @@ router.get('/validar-qr', verificar);
 
 //Cartera credito
 
-router.get('/cartera_comercializadora', carteraCredito);
+router.get('/carteras', carteraCredito);
+router.get('/cartera-consolidada', carteraCreditoConsolidada);
 
 module.exports = router;

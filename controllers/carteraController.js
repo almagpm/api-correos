@@ -1,41 +1,107 @@
+const siemprendemos = require('../database');
 const comercializadora = require('../database2');
+const queretaro = require('../database3');
+
 const createResponse = require('./response');
 const util = require('util');
 const query = util.promisify(comercializadora.query).bind(comercializadora);
+const query_siemprendemos = util.promisify(siemprendemos.query).bind(siemprendemos);
+const query_queretaro = util.promisify(queretaro.query).bind(queretaro);
 
 //Importaciones para el excel
 
 
-const {  pruebasCartera, sinPreCierre} = require('./correoCartera');
+const {  pruebasCartera, sinPreCierre, pruebasCarteraConsolidada} = require('./correoCartera');
 
 
 const carteraCredito = async (req, res) => {
     try {
-        // Verificar si existe al menos un registro en la tabla precierre
+        let generarComercializadora= true;
+        let generarSiemprendemos = true;
+        let generarQueretaro = true;
+
+        let listaAcomodadaC;
+        let listaAcomodadaS;
+        let listaAcomodadaQ;
+        //------------------------------------------COMERCIALIZADORA INICIO----------------------------------------------------
+        //COMERCIALIZADORA CHEQUEP DE CIERRE
         const validacionCierre = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
         const validacionResult = await query(validacionCierre);
 
-        console.log("Resultados");
+        console.log("Resultados comer");
         console.log(validacionResult.rowCount);
 
         if (!validacionResult || validacionResult.rowCount === 0) {
-            await sinPreCierre();
-            const response = createResponse(400, null, "No hay un precierre para generar la cartera", 1);
-            return res.send(response);
+            generarComercializadora= false;
+            console.log("No generar comercializadora");
+        }else{
+            const consulta = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '02')`;
+            const result = await query(consulta);
+            listaAcomodadaC= mapeo(result);
+
+        }
+
+        //------------------------------------------COMERCIALIZADORA FINAL----------------------------------------------------
+
+        //------------------------------------------SIEMPRENDEMOS INICIO------------------------------------------------------
+
+
+        const validacionCierreS = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
+        console.log("Va a consultar siemprendemos: ");
+        const validacionResultS = await query_siemprendemos(validacionCierreS);
+
+        console.log("Resultados siempren");
+        console.log(validacionResultS.rowCount);
+
+        if (!validacionResultS || validacionResultS.rowCount === 0) {
+            generarSiemprendemos = false;
+            console.log("No generar siemprendemos");
+        }else {
+            const consultaS = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '01')`;
+            const resultS = await query_siemprendemos(consultaS);
+
+            
+             listaAcomodadaS= mapeo(resultS);
         }
 
 
 
-        const consulta = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '02')`;
-        const result = await query(consulta);
+        
+
+        //------------------------------------------SIEMPRENDEMOS FINAL----------------------------------------------------
+
+        //------------------------------------------QUERETARO INICIO------------------------------------------------------
+
+
+        const validacionCierreQ = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
+        const validacionResultQ = await query_queretaro(validacionCierreQ);
+
+        console.log("Resultados queretaro");
+        console.log(validacionResultQ.rowCount);
+
+        if (!validacionResultQ || validacionResultQ.rowCount === 0) {
+            generarQueretaro= false;
+            console.log("No generar queretaro");
+        }else {
+            const consultaQ = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '03')`;
+            const resultQ = await query_queretaro(consultaQ);
+    
+            
+            listaAcomodadaQ= mapeo(resultQ);
+        }
+
+
 
         
-        const listaAcomodada = mapeo(result);
+
+        //------------------------------------------QUERETARO FINAL----------------------------------------------------
+
+
         const cabecera = cabeceraExcel();
+        console.log("va a generar el correo ");
+        await pruebasCartera(listaAcomodadaC, listaAcomodadaS, listaAcomodadaQ, cabecera, generarComercializadora, generarSiemprendemos, generarQueretaro);
 
-        await pruebasCartera(listaAcomodada, cabecera);
-
-        const response = createResponse(200, listaAcomodada, "Cartera generada correctamente", 0);
+        const response = createResponse(200,cabecera, "Cartera generada correctamente", 0);
         res.send(response);
     } catch (err) {
         console.error(err);
@@ -230,5 +296,55 @@ const cabeceraExcel = () =>{
     ];
     };
 
+    const carteraCreditoConsolidada = async (req, res) => {
+        try {
+            const validacionCierre = `SELECT * FROM checar_precierres_consolidados('14/01/2025')`;
+            const validacionResult = await query(validacionCierre);
+    
+            console.log("Resultados");
+            console.log(validacionResult.rows);
 
-module.exports = { carteraCredito };
+            respuestas = validacionResult.rows; 
+            let hayprecierre = true;
+
+            for (const respuesta of respuestas) {
+                hayprecierre= respuesta.checar_precierres_consolidados;
+
+            }
+            console.log("PRECIERRE EXISTE:"),
+            console.log(hayprecierre);
+
+            if(hayprecierre){
+
+                const consulta = `SELECT * FROM spsgenerarchivocarteraconsolidado_2('14/01/2025')`;
+                const result = await query(consulta);
+        
+                
+                const listaAcomodada = mapeo(result);
+                const cabecera = cabeceraExcel();
+        
+                await pruebasCarteraConsolidada(listaAcomodada, cabecera);
+            }else{
+                await sinPreCierre();
+                const response = createResponse(400, null, "No hay un precierre para generar la cartera", 1);
+                return res.send(response);
+
+            }
+
+
+
+
+
+    
+            
+    
+            const response = createResponse(200, "Cartera generada correctamente", 0);
+            res.send(response);
+        } catch (err) {
+            console.error(err);
+            const response = createResponse(500, null, "Error al generar la cartera", 1);
+            res.send(response);
+        }
+    };
+
+module.exports = { carteraCredito, carteraCreditoConsolidada };
