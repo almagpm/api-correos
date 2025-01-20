@@ -524,7 +524,7 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['alma.pm.archivos@gmail.com', 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'],
+            to: ['oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'],
             subject: `Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
@@ -795,7 +795,7 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: ['alma.pm.archivos@gmail.com', 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'],
+            to: [ 'oficialdecumplimiento@siemprendemos.com.mx','oficialcumplimiento@siemprendemos.com.mx'],
             subject: `Entorno pruebas - Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
