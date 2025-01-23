@@ -134,6 +134,7 @@ const mapeo = (data) => {
         fecha_ultimo_abono_capital: row.fecha_ultimo_abono_capital || '',
         pago_capital_periodo: row.pago_capital_periodo || '',
         fecha_ultimo_abono_interes: row.fecha_ultimo_abono_interes || 'N/A',
+        importe_ultimo_abono_interes: row.pago_interes_periodo || 'N/A',
         fecha_ultima_amortizacion_pagada: row.fecha_ultima_amortizacion_pagada || 'N/A',
         importe_ultima_amortizacion: row.importe_ultima_amortizacion || '',
         vencimiento_primera_amort_no_cubierta: row.vencimiento_primera_amort_no_cubierta || '',
