@@ -131,9 +131,8 @@ const pruebasCartera = async (
             to: [
                 'alma.pm.archivos@gmail.com',
                 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
-                'direccion@ibtmx.com',
                 'auxprocesos@siemprendemos.com.mx',
-                'ejecutiva.agronegocios@siemprendemos.com.mx',
+                'ejecutiva.agronegocios@siemprendemos.com.mx', 
              ],
             subject: `Cartera SIAGRO, SAPI y QUERETARO ${hoy}`,
             html: `
@@ -201,7 +200,6 @@ const sinPreCierre = async () => {
             to: [
                 'alma.pm.archivos@gmail.com',
                 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
-                'direccion@ibtmx.com',
                 'auxprocesos@siemprendemos.com.mx',
                 'ejecutiva.agronegocios@siemprendemos.com.mx',
              ],
@@ -309,7 +307,6 @@ const pruebasCarteraConsolidada = async (listaAcomodadas, cabecera) => {
             to: [
                 'alma.pm.archivos@gmail.com',
                 'contabilidadsiemprendemos_cdr@siemprendemos.com.mx',
-                'direccion@ibtmx.com',
                 'auxprocesos@siemprendemos.com.mx',
                 'ejecutiva.agronegocios@siemprendemos.com.mx',
              ],
