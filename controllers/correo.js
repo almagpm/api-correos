@@ -264,7 +264,7 @@ const pruebas = async (filteredResults, otrasalertas, preocupantesResults, based
 
         const mailOptions = {
             from: 'sistemas@siemprendemos.com.mx',
-            to: 'alma.pm.archivos@gmail.com',
+            to: ['alma.pm.archivos@gmail.com','direccion@ibtmx.com'],
             subject: `Reporte diario de operaciones y cambios - ${basededatos} - ${hoy}`,
             html: `
             <div style="background-color: #f6f6f6; padding: 20px;">
@@ -362,7 +362,7 @@ transporter.sendMail(mailOptions, (err, info) => {
  * Envía un correo electrónico con una tabla generada dinámicamente a partir de los datos proporcionados.
  * @param {Array} filteredResults - Array de objetos con datos filtrados.
  */
-const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos) => {
+const sendVerificationEmail = async (filteredResults, otrasalertas, preocupantesResults, basededatos) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -690,7 +690,7 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
     }
 };
 
-const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
+const sendEmailPruebas = async (filteredResults, otrasalertas, preocupantesResults, basededatos) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
