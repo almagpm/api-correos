@@ -54,11 +54,22 @@ const enviarCorreosPld = async (req, res) => {
             };
         });
 
-
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendVerificationEmail(emailData,groupedNotificaciones, "SIAGRO");
-        await pruebas(emailData, groupedNotificaciones, "SIAGRO");
+         //CONSULTA DE PREOCUPANTES
+         const preocupantes = ` SELECT * FROM vw_datos_operaciones_ld WHERE fecha = CURRENT_DATE `;
+         const resultp = await query(preocupantes);
+ 
+         const datap = Array.isArray(resultp) ? resultp : resultp.rows;
+ 
+         const preocupantesData = datap.length > 0 ? datap : [{ mensaje: "No hay alertas" }];
+         //CONSULTA DE PREOCUPANTES
+
+
+        
+
+        await sendVerificationEmail(emailData,groupedNotificaciones, preocupantesData,  "SIAGRO");
+        await pruebas(emailData, groupedNotificaciones, preocupantesData, "SIAGRO");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -113,8 +124,17 @@ const enviarCorreosPldSapi = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendVerificationEmail(emailData, groupedNotificaciones, "SAPI");
-        await pruebas(emailData, groupedNotificaciones, "SAPI");
+        //CONSULTA DE PREOCUPANTES
+        const preocupantes = ` SELECT * FROM vw_datos_operaciones_ld WHERE fecha = CURRENT_DATE `;
+        const resultp = await query2(preocupantes);
+
+        const datap = Array.isArray(resultp) ? resultp : resultp.rows;
+
+        const preocupantesData = datap.length > 0 ? datap : [{ mensaje: "No hay alertas" }];
+        //CONSULTA DE PREOCUPANTES
+
+        await sendVerificationEmail(emailData, groupedNotificaciones, preocupantesData, "SAPI");
+        await pruebas(emailData, groupedNotificaciones, preocupantesData,  "SAPI");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -172,7 +192,16 @@ const pruebas_comercializadora = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendEmailPruebas(emailData, groupedNotificaciones, "SAPI (prueba)");
+        //CONSULTA DE PREOCUPANTES
+        const preocupantes = ` SELECT * FROM vw_datos_operaciones_ld WHERE fecha = CURRENT_DATE `;
+        const resultp = await query_pc(preocupantes);
+
+        const datap = Array.isArray(resultp) ? resultp : resultp.rows;
+
+        const preocupantesData = datap.length > 0 ? datap : [{ mensaje: "No hay alertas" }];
+        //CONSULTA DE PREOCUPANTES
+
+        await sendEmailPruebas(emailData, groupedNotificaciones, preocupantesData, "SAPI (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -230,7 +259,16 @@ const pruebas_siemprendemos = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendEmailPruebas(emailData, groupedNotificaciones, "SIAGRO (prueba)");
+        //CONSULTA DE PREOCUPANTES
+        const preocupantes = ` SELECT * FROM vw_datos_operaciones_ld WHERE fecha = CURRENT_DATE `;
+        const resultp = await query_ps(preocupantes);
+
+        const datap = Array.isArray(resultp) ? resultp : resultp.rows;
+
+        const preocupantesData = datap.length > 0 ? datap : [{ mensaje: "No hay alertas" }];
+        //CONSULTA DE PREOCUPANTES
+
+        await sendEmailPruebas(emailData, groupedNotificaciones, preocupantesData, "SIAGRO (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"
@@ -287,7 +325,16 @@ const pruebas_queretaro = async (req, res) => {
 
         //TERMINA EL DE CORREO DE DIVERSOS
 
-        await sendEmailPruebas(emailData, groupedNotificaciones, "Queretaro (prueba)");
+        //CONSULTA DE PREOCUPANTES
+        const preocupantes = ` SELECT * FROM vw_datos_operaciones_ld WHERE fecha = CURRENT_DATE `;
+        const resultp = await query_pq(preocupantes);
+
+        const datap = Array.isArray(resultp) ? resultp : resultp.rows;
+
+        const preocupantesData = datap.length > 0 ? datap : [{ mensaje: "No hay alertas" }];
+        //CONSULTA DE PREOCUPANTES
+
+        await sendEmailPruebas(emailData, groupedNotificaciones,preocupantesData, "Queretaro (prueba)");
 
         const responseMessage = data.length > 0 || dataNotificaciones.length > 0
             ? "Notificaciones enviadas correctamente por correo"

@@ -6,7 +6,7 @@ const QRCode = require('qrcode');
 const jwt = require('jsonwebtoken');
 
 
-const pruebas = async (filteredResults, otrasalertas, basededatos) => {
+const pruebas = async (filteredResults, otrasalertas, preocupantesResults, basededatos) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -51,6 +51,7 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
 
         // Validación de alertas
         const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
+        const noHayAlertasPreocupantes = preocupantesResults[0]?.mensaje === "No hay alertas";
 
         // Contenido del documento
         const docDefinition = {
@@ -82,6 +83,28 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
                         },
                         layout: 'lightHorizontalLines',
                     },
+                    { text: '\nOperaciones preocupantes', style: 'tableHeader' },
+                    noHayAlertasPreocupantes
+                        ? {
+                            text: 'No hay alertas preocupantes para el día de hoy.',
+                            style: 'noAlerts',
+                            margin: [0, 10, 0, 10],
+                        }
+                        : {
+                            table: {
+                                headerRows: 1,
+                                widths: [80, 120, 200], 
+                                body: [
+                                    ['No. Cliente', 'Nombre', 'Descripción'], // Headers
+                                    ...preocupantesResults.map(item => [
+                                        item.numero_cliente || "N/A",
+                                        item.nombre || "N/A",
+                                        item.descripcion || "N/A",
+                                    ]),
+                                ],
+                            },
+                            layout: 'lightHorizontalLines',
+                        },
                 { text: '\nOtras Alertas', style: 'tableHeader' },
                 ...otrasalertas.flatMap(group => {
                     const noHayNotificaciones =
@@ -155,7 +178,8 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
 
 
 
-        let tableRowsPLD; // Declaración inicial
+        let tableRowsPLD; 
+        let tableRowPreocupantes;
 
         if (filteredResults[0]?.mensaje === "No hay alertas") {
             tableRowsPLD = `
@@ -175,6 +199,24 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
                         <td style="padding: 10px; border: 1px solid #ddd;">${fechaAlarmaString}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.tipo}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.motivo}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        if (preocupantesResults[0]?.mensaje === "No hay alertas") {
+            tableRowPreocupantes = `
+                <tr style="text-align: center;">
+                    <td colspan="4" style="padding: 10px; border: 1px solid #ddd;">No hay alertas para el día de hoy</td>
+                </tr>
+            `;
+        } else {
+            tableRowPreocupantes = preocupantesResults.map(item => {
+
+                return `
+                    <tr style="text-align: center;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.numero_cliente}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.nombre}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.descripcion}</td>
                     </tr>
                 `;
             }).join('');
@@ -246,6 +288,20 @@ const pruebas = async (filteredResults, otrasalertas, basededatos) => {
                             </thead>
                             <tbody>
                                 ${tableRowsPLD}
+                            </tbody>
+                        </table>
+                        <br>
+                        <h3 style="color: #333333; text-align: center;">Operaciones preocupantes</h3>
+                        <table style="margin: 20px auto; border-collapse: collapse; width: 100%; max-width: 500px; text-align: left; border: 1px solid #ddd;">
+                            <thead>
+                                <tr style="background-color: #00336a; color: #ffffff; text-align: center;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">No. Cliente</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Nombre</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowPreocupantes}
                             </tbody>
                         </table>
                         ${notificacionesHTML}
@@ -353,6 +409,7 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
 
         // Validación de alertas
         const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
+        const noHayAlertasPreocupantes = preocupantesResults[0]?.mensaje === "No hay alertas";
 
         // Contenido del documento
         const docDefinition = {
@@ -384,6 +441,28 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
                         },
                         layout: 'lightHorizontalLines',
                     },
+                    { text: '\nOperaciones preocupantes', style: 'tableHeader' },
+                    noHayAlertasPreocupantes
+                        ? {
+                            text: 'No hay alertas preocupantes para el día de hoy.',
+                            style: 'noAlerts',
+                            margin: [0, 10, 0, 10],
+                        }
+                        : {
+                            table: {
+                                headerRows: 1,
+                                widths: [80, 120, 200], 
+                                body: [
+                                    ['No. Cliente', 'Nombre', 'Descripción'], // Headers
+                                    ...preocupantesResults.map(item => [
+                                        item.numero_cliente || "N/A",
+                                        item.nombre || "N/A",
+                                        item.descripcion || "N/A",
+                                    ]),
+                                ],
+                            },
+                            layout: 'lightHorizontalLines',
+                        },
                 { text: '\nOtras Alertas', style: 'tableHeader' },
                 ...otrasalertas.flatMap(group => {
                     const noHayNotificaciones =
@@ -457,7 +536,8 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
 
 
 
-        let tableRowsPLD; // Declaración inicial
+        let tableRowsPLD; 
+        let tableRowPreocupantes;
 
         if (filteredResults[0]?.mensaje === "No hay alertas") {
             tableRowsPLD = `
@@ -477,6 +557,24 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
                         <td style="padding: 10px; border: 1px solid #ddd;">${fechaAlarmaString}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.tipo}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.motivo}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        if (preocupantesResults[0]?.mensaje === "No hay alertas") {
+            tableRowPreocupantes = `
+                <tr style="text-align: center;">
+                    <td colspan="4" style="padding: 10px; border: 1px solid #ddd;">No hay alertas para el día de hoy</td>
+                </tr>
+            `;
+        } else {
+            tableRowPreocupantes = preocupantesResults.map(item => {
+
+                return `
+                    <tr style="text-align: center;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.numero_cliente}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.nombre}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.descripcion}</td>
                     </tr>
                 `;
             }).join('');
@@ -548,6 +646,20 @@ const sendVerificationEmail = async (filteredResults, otrasalertas, basededatos)
                             </thead>
                             <tbody>
                                 ${tableRowsPLD}
+                            </tbody>
+                        </table>
+                        <br>
+                        <h3 style="color: #333333; text-align: center;">Operaciones preocupantes</h3>
+                        <table style="margin: 20px auto; border-collapse: collapse; width: 100%; max-width: 500px; text-align: left; border: 1px solid #ddd;">
+                            <thead>
+                                <tr style="background-color: #00336a; color: #ffffff; text-align: center;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">No. Cliente</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Nombre</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowPreocupantes}
                             </tbody>
                         </table>
                         ${notificacionesHTML}
@@ -624,6 +736,7 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
 
         // Validación de alertas
         const noHayAlertasPLD = filteredResults[0]?.mensaje === "No hay alertas";
+        const noHayAlertasPreocupantes = preocupantesResults[0]?.mensaje === "No hay alertas";
 
         // Contenido del documento
         const docDefinition = {
@@ -655,6 +768,28 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
                         },
                         layout: 'lightHorizontalLines',
                     },
+                    { text: '\nOperaciones preocupantes', style: 'tableHeader' },
+                    noHayAlertasPreocupantes
+                        ? {
+                            text: 'No hay alertas preocupantes para el día de hoy.',
+                            style: 'noAlerts',
+                            margin: [0, 10, 0, 10],
+                        }
+                        : {
+                            table: {
+                                headerRows: 1,
+                                widths: [80, 120, 200], 
+                                body: [
+                                    ['No. Cliente', 'Nombre', 'Descripción'], // Headers
+                                    ...preocupantesResults.map(item => [
+                                        item.numero_cliente || "N/A",
+                                        item.nombre || "N/A",
+                                        item.descripcion || "N/A",
+                                    ]),
+                                ],
+                            },
+                            layout: 'lightHorizontalLines',
+                        },
                 { text: '\nOtras Alertas', style: 'tableHeader' },
                 ...otrasalertas.flatMap(group => {
                     const noHayNotificaciones =
@@ -728,7 +863,8 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
 
 
 
-        let tableRowsPLD; // Declaración inicial
+        let tableRowsPLD; 
+        let tableRowPreocupantes;
 
         if (filteredResults[0]?.mensaje === "No hay alertas") {
             tableRowsPLD = `
@@ -748,6 +884,24 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
                         <td style="padding: 10px; border: 1px solid #ddd;">${fechaAlarmaString}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.tipo}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.motivo}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        if (preocupantesResults[0]?.mensaje === "No hay alertas") {
+            tableRowPreocupantes = `
+                <tr style="text-align: center;">
+                    <td colspan="4" style="padding: 10px; border: 1px solid #ddd;">No hay alertas para el día de hoy</td>
+                </tr>
+            `;
+        } else {
+            tableRowPreocupantes = preocupantesResults.map(item => {
+
+                return `
+                    <tr style="text-align: center;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.numero_cliente}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.nombre}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.descripcion}</td>
                     </tr>
                 `;
             }).join('');
@@ -819,6 +973,20 @@ const sendEmailPruebas = async (filteredResults, otrasalertas, basededatos) => {
                             </thead>
                             <tbody>
                                 ${tableRowsPLD}
+                            </tbody>
+                        </table>
+                        <br>
+                        <h3 style="color: #333333; text-align: center;">Operaciones preocupantes</h3>
+                        <table style="margin: 20px auto; border-collapse: collapse; width: 100%; max-width: 500px; text-align: left; border: 1px solid #ddd;">
+                            <thead>
+                                <tr style="background-color: #00336a; color: #ffffff; text-align: center;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">No. Cliente</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Nombre</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowPreocupantes}
                             </tbody>
                         </table>
                         ${notificacionesHTML}
