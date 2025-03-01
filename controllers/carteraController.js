@@ -25,7 +25,7 @@ const carteraCredito = async (req, res) => {
         let listaAcomodadaQ;
         //------------------------------------------COMERCIALIZADORA INICIO----------------------------------------------------
         //COMERCIALIZADORA CHEQUEP DE CIERRE
-        const validacionCierre = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
+        const validacionCierre = `SELECT * FROM precierre WHERE fecha_cierre = '2025-02-28'`;
         const validacionResult = await query(validacionCierre);
 
         console.log("Resultados comer");
@@ -35,7 +35,7 @@ const carteraCredito = async (req, res) => {
             generarComercializadora= false;
             console.log("No generar comercializadora");
         }else{
-            const consulta = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '02')`;
+            const consulta = `SELECT * FROM spsgenerarchivocartera_node_('2025-02-28', 0, '02')`;
             const result = await query(consulta);
             listaAcomodadaC= mapeo(result);
 
@@ -46,7 +46,7 @@ const carteraCredito = async (req, res) => {
         //------------------------------------------SIEMPRENDEMOS INICIO------------------------------------------------------
 
 
-        const validacionCierreS = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
+        const validacionCierreS = `SELECT * FROM precierre WHERE fecha_cierre = '2025-02-28'`;
         console.log("Va a consultar siemprendemos: ");
         const validacionResultS = await query_siemprendemos(validacionCierreS);
 
@@ -57,7 +57,7 @@ const carteraCredito = async (req, res) => {
             generarSiemprendemos = false;
             console.log("No generar siemprendemos");
         }else {
-            const consultaS = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '01')`;
+            const consultaS = `SELECT * FROM spsgenerarchivocartera_node_('2025-02-28', 0, '01')`;
             const resultS = await query_siemprendemos(consultaS);
 
             
@@ -73,7 +73,7 @@ const carteraCredito = async (req, res) => {
         //------------------------------------------QUERETARO INICIO------------------------------------------------------
 
 
-        const validacionCierreQ = `SELECT * FROM precierre WHERE fecha_cierre = CURRENT_DATE`;
+        const validacionCierreQ = `SELECT * FROM precierre WHERE fecha_cierre = '2025-02-28'`;
         const validacionResultQ = await query_queretaro(validacionCierreQ);
 
         console.log("Resultados queretaro");
@@ -83,7 +83,7 @@ const carteraCredito = async (req, res) => {
             generarQueretaro= false;
             console.log("No generar queretaro");
         }else {
-            const consultaQ = `SELECT * FROM spsgenerarchivocartera_node_(CURRENT_DATE, 0, '03')`;
+            const consultaQ = `SELECT * FROM spsgenerarchivocartera_node_('2025-02-28', 0, '03')`;
             const resultQ = await query_queretaro(consultaQ);
     
             
